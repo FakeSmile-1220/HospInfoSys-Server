@@ -47,7 +47,7 @@ public class UserRepository {
         return user.password().equals(password);
     }
 
-    @Scheduled(fixedRate = 30000)
+    @Scheduled(fixedRate = 60000)
     public void saveUsers() {
         try {
             logger.info("Saving users...");

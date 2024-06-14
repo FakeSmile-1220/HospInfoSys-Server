@@ -28,7 +28,7 @@ public class RegistInfoRepository {
         registInfos.put(registInfo.id(), registInfo);
     }
 
-    @Scheduled(fixedRate = 30000)
+    @Scheduled(fixedRate = 60000)
     public void saveRegistInfos() {
         try {
             logger.info("Saving regist infos...");
@@ -46,6 +46,7 @@ public class RegistInfoRepository {
 
     public void loadRegistInfos() {
         try {
+            logger.info("Loading regist infos...");
             FileInputStream fis = new FileInputStream("registInfo.dat");
             ObjectInputStream ois = new ObjectInputStream(fis);
 
@@ -55,6 +56,7 @@ public class RegistInfoRepository {
             ois.close();
             fis.close();
         } catch (Exception e) {
+            logger.error("Error loading regist infos", e);
             throw new RuntimeException(e);
         }
     }

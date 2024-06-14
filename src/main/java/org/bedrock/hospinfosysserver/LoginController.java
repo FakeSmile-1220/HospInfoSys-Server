@@ -21,7 +21,7 @@ public class LoginController {
 
     @GetMapping("api/login")
     public ResponseEntity<Token> login(@RequestParam final String username, @RequestParam final String password) {
-        logger.info("User " + username + " trying to login with password " + password);
+        logger.info("Log in request: User {} trying to login with password {}", username, password);
         User user = userRepository.getUser(username);
         if (user == null || !userRepository.verifyUser(username, password)) {
             return ResponseEntity.status(403).body(null);

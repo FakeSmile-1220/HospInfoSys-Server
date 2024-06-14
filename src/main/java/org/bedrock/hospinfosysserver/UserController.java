@@ -34,7 +34,9 @@ public class UserController {
         User user = new User(id, realName, password, type);
 
         if (!tokenRepository.verifyTokenAdmin(token)) {
-            return ResponseEntity.status(401).body("Token does not exist or token is not admin");
+            return ResponseEntity
+                    .status(401)
+                    .body("Token does not exist or token is not admin");
         }
 
         userRepository.putUser(user);
@@ -45,9 +47,9 @@ public class UserController {
 
     @PostMapping("api/doctor")
     public ResponseEntity<String> addDoctor(@RequestParam String id, @RequestParam String realName,
-                                          @RequestParam String password, @RequestParam String type,
-                                          @RequestParam String deptName, @RequestParam String registLevel,
-                                          @RequestParam Double registFee, @RequestParam String token) {
+                                            @RequestParam String password, @RequestParam String type,
+                                            @RequestParam String deptName, @RequestParam String registLevel,
+                                            @RequestParam Double registFee, @RequestParam String token) {
 
         Doctor doctor = new Doctor(id, realName, password, type, deptName, registLevel, registFee);
 

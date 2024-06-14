@@ -26,7 +26,7 @@ public class RegistInfoRepository {
         registInfos.put(registInfo.id(), registInfo);
     }
 
-    @Scheduled(fixedRate = 60000)
+//    @Scheduled(fixedRate = 60000)
     public void saveRegistInfos() {
         try {
             logger.info("Saving regist infos...");

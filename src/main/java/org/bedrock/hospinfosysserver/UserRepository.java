@@ -2,6 +2,7 @@ package org.bedrock.hospinfosysserver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Repository;
 
 import java.io.FileInputStream;
@@ -19,6 +20,8 @@ public class UserRepository {
     public UserRepository() {
         logger.info("Initializing UserRepository");
         users = new HashMap<>();
+
+        loadUsers();
 
         User admin = new User("kalen", "kalen", "123", "admin");
         users.put("kalen", admin);
@@ -44,7 +47,7 @@ public class UserRepository {
         return user.password().equals(password);
     }
 
-//    @Scheduled(fixedRate = 60000)
+    @Scheduled(fixedRate = 30000)
     public void saveUsers() {
         try {
             logger.info("Saving users...");

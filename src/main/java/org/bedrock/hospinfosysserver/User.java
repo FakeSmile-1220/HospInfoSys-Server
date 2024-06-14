@@ -1,6 +1,8 @@
 package org.bedrock.hospinfosysserver;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
     private final String id;
     private final String realName;
     private final String password;

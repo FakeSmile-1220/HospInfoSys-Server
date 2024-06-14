@@ -16,6 +16,8 @@ public class RegistInfoRepository {
 
     public RegistInfoRepository() {
         registInfos = new HashMap<>();
+
+        loadRegistInfos();
     }
 
     public RegistInfo getRegistInfo(final int id) {
@@ -26,7 +28,7 @@ public class RegistInfoRepository {
         registInfos.put(registInfo.id(), registInfo);
     }
 
-//    @Scheduled(fixedRate = 60000)
+    @Scheduled(fixedRate = 30000)
     public void saveRegistInfos() {
         try {
             logger.info("Saving regist infos...");

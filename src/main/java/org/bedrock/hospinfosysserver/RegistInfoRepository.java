@@ -11,7 +11,7 @@ import java.util.Map;
 
 @Repository
 public class RegistInfoRepository {
-    private Map<Integer, RegistInfo> registInfos;
+    private Map<String, RegistInfo> registInfos;
     private final Logger logger = LoggerFactory.getLogger(RegistInfoRepository.class);
 
     public RegistInfoRepository() {
@@ -31,7 +31,7 @@ public class RegistInfoRepository {
     @Scheduled(fixedRate = 60000)
     public void saveRegistInfos() {
         try {
-            logger.info("Saving regist infos...");
+//            logger.info("Saving regist infos...");
             FileOutputStream fos = new FileOutputStream("registInfo.dat");
             ObjectOutputStream oos = new ObjectOutputStream(fos);
 
@@ -52,7 +52,7 @@ public class RegistInfoRepository {
 
             Object o = ois.readObject();
             //noinspection unchecked
-            registInfos = (Map<Integer, RegistInfo>) o;
+            registInfos = (Map<String, RegistInfo>) o;
             ois.close();
             fis.close();
         } catch (Exception e) {

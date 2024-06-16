@@ -37,4 +37,9 @@ public class TokenRepository {
         Token tokenObj = tokensByContent.get(content);
         return tokenObj != null && tokenObj.getType().equals("admin");
     }
+
+    public String getTokenTypeByContent(String content) {
+        Token tokenObj = tokensByContent.get(content);
+        return tokenObj.getType();
+    }
 }

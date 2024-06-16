@@ -50,7 +50,7 @@ public class UserRepository {
     @Scheduled(fixedRate = 60000)
     public void saveUsers() {
         try {
-            logger.info("Saving users...");
+//            logger.info("Saving users...");
             FileOutputStream fos = new FileOutputStream("user.dat");
             ObjectOutputStream oos = new ObjectOutputStream(fos);
 

@@ -34,7 +34,7 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    @PostMapping("api/user")
+    @PostMapping("api/register/user")
     public ResponseEntity<String> addUser(@RequestBody final String userJsonString) {
 
         JSONObject jsonObject;
@@ -67,7 +67,7 @@ public class UserController {
                 .body("Successfully added user");
     }
 
-    @PostMapping("api/doctor")
+    @PostMapping("api/register/doctor")
     public ResponseEntity<String> addDoctor(@RequestBody String doctorJsonString) {
 
         logger.info("Add doctor: {}", doctorJsonString);

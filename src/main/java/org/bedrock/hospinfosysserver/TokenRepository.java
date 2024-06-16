@@ -9,8 +9,8 @@ import java.util.*;
 //@Repository
 @Deprecated
 public class TokenRepository {
-    private Map<String, Token> tokens;
-    private Map<String, Token> tokensByContent;
+    private final Map<String, Token> tokens;
+    private final Map<String, Token> tokensByContent;
     Logger logger = LoggerFactory.getLogger(TokenRepository.class);
 
     public TokenRepository() {

@@ -9,12 +9,19 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.function.EntityResponse;
 
+import java.io.IOException;
 import java.util.Objects;
 
 @Component
 public class RequestsLoginCheckInterceptor implements HandlerInterceptor {
 
     private final TokenService tokenService;
+
+    private void transformUtil(final HttpServletResponse response,
+                               final ResponseEntity<String> responseEntity) throws IOException {
+        response.setStatus(responseEntity.getStatusCode().value());
+        response.getWriter().write(Objects.requireNonNull(responseEntity.getBody()));
+    }
 
     public RequestsLoginCheckInterceptor(TokenService tokenService) {
         this.tokenService = tokenService;
@@ -32,26 +39,26 @@ public class RequestsLoginCheckInterceptor implements HandlerInterceptor {
 
         String jwt = request.getHeader("Token");
         if (jwt == null) {
-            ResponseEntity<String> unauthorizedResponse = ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            ResponseEntity<String> unauthorizedResponse = ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
                     .body("Missing or invalid token.");
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            response.getWriter().write(Objects.requireNonNull(unauthorizedResponse.getBody()));
+            transformUtil(response, unauthorizedResponse);
             return false;
         }
 
         if (requestUrl.contains("admin") && !tokenService.getTokenClaim(jwt, "type").equals("admin")) {
-            ResponseEntity<String> forbiddenResponse = ResponseEntity.status(HttpStatus.FORBIDDEN)
+            ResponseEntity<String> forbiddenResponse = ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
                     .body("Admin access required.");
-            response.setStatus(HttpStatus.FORBIDDEN.value());
-            response.getWriter().write(Objects.requireNonNull(forbiddenResponse.getBody()));
+            transformUtil(response, forbiddenResponse);
             return false;
         }
 
         if (!tokenService.verifyToken(jwt)) {
-            ResponseEntity<String> unauthorizedResponse = ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            ResponseEntity<String> unauthorizedResponse = ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
                     .body("Invalid token.");
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            response.getWriter().write(Objects.requireNonNull(unauthorizedResponse.getBody()));
+            transformUtil(response, unauthorizedResponse);
             return false;
         }
 

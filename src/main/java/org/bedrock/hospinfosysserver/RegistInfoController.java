@@ -40,7 +40,7 @@ public class RegistInfoController {
                     .body("Error parsing registInfo JSON");
         }
 
-        String id = CustomUUIDGenerator.generateUUID(8);
+        String id = registInfoJson.optString("id");
         String realName = registInfoJson.optString("realName");
         String gender = registInfoJson.optString("gender");
         String cardNumber = registInfoJson.optString("cardNumber");
@@ -65,7 +65,13 @@ public class RegistInfoController {
                 birthdate, age, homeAddress, deptName, doctorName, registLevel, isBook,
                 registFee, registDate, diagnosis, prescription, drugPrice, visitState);
 
-        registInfoRepository.putRegistInfo(registInfo);
+        try {
+            registInfoRepository.putRegistInfo(registInfo);
+        } catch (IllegalStateException e) {
+            return ResponseEntity
+                    .unprocessableEntity()
+                    .body("id already exists");
+        }
 
         return ResponseEntity
                 .ok()

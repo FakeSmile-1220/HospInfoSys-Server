@@ -24,7 +24,10 @@ public class RegistInfoRepository {
         return registInfos.get(id);
     }
 
-    public void putRegistInfo(final RegistInfo registInfo) {
+    public void putRegistInfo(final RegistInfo registInfo) throws IllegalStateException{
+        if (registInfos.containsKey(registInfo.id())) {
+            throw new IllegalStateException("RegistInfo with id " + registInfo.id() + " already exists");
+        }
         registInfos.put(registInfo.id(), registInfo);
     }
 

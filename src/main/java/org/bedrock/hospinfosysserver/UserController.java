@@ -2,6 +2,8 @@ package org.bedrock.hospinfosysserver;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,6 +14,7 @@ public class UserController {
 
     final private UserRepository userRepository;
     final private TokenRepository tokenRepository;
+    final private Logger logger = LoggerFactory.getLogger(UserController.class);
 
     public UserController(final UserRepository doctorRepository, TokenRepository tokenRepository) {
         this.userRepository = doctorRepository;
@@ -70,6 +73,7 @@ public class UserController {
         }
 
         userRepository.putUser(user);
+        logger.info("Added user: {}, type: {}, realName: {}", id, type, realName);
         return ResponseEntity
                 .ok()
                 .body("Successfully added user");

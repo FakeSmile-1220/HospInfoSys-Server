@@ -1,8 +1,8 @@
 package org.bedrock.hospinfosysserver;
 
 import java.util.Calendar;
-import java.util.Date;
 
+@Deprecated
 public class Token {
     private String content;
     private String type;

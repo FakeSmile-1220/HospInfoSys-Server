@@ -6,7 +6,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
-@Repository
+//@Repository
+@Deprecated
 public class TokenRepository {
     private Map<String, Token> tokens;
     private Map<String, Token> tokensByContent;

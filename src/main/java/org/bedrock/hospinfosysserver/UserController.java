@@ -11,46 +11,31 @@ import java.util.Collection;
 
 @RestController
 public class UserController {
-
-    private final boolean tokenRequired = false;
-
     final private UserRepository userRepository;
-    final private TokenRepository tokenRepository;
+    final private TokenService tokenService;
     final private Logger logger = LoggerFactory.getLogger(UserController.class);
 
-    public UserController(final UserRepository doctorRepository, TokenRepository tokenRepository) {
+    public UserController(final UserRepository doctorRepository, TokenService tokenService) {
         this.userRepository = doctorRepository;
-        this.tokenRepository = tokenRepository;
+        this.tokenService = tokenService;
     }
 
-    @GetMapping("/api/users")
-    public ResponseEntity<Collection<User>> getUsers(@RequestParam String token) {
-        Token tokenObj = tokenRepository.getTokenByContent(token);
-
-        if (tokenObj == null) {
-            return ResponseEntity.status(401).body(null);
-        }
-
+    @GetMapping("/api/admin/users")
+    public ResponseEntity<Collection<User>> getUsers() {
         return ResponseEntity
                 .ok()
                 .body(userRepository.getUsers().values());
     }
 
     @GetMapping("api/getUser")
-    public ResponseEntity<User> getUser(@RequestParam String username,
-                                        @RequestParam String token) {
+    public ResponseEntity<User> getUser(@RequestParam String username) {
         User user = userRepository.getUser(username);
 
-        if (user == null || tokenRepository.getToken(username) == null) {
-            return ResponseEntity.status(401).body(null);
-        } else {
-            return ResponseEntity.ok(user);
-        }
+        return ResponseEntity.ok(user);
     }
 
     @PostMapping("api/user")
-    public ResponseEntity<String> addUser(@RequestBody final String userJsonString,
-                                          @RequestParam(required = tokenRequired) String token) {
+    public ResponseEntity<String> addUser(@RequestBody final String userJsonString) {
 
         JSONObject jsonObject;
         try {
@@ -66,13 +51,14 @@ public class UserController {
         String password = jsonObject.optString("password");
         String type = jsonObject.optString("type");
 
+        if (type.equals("admin")) {
+            return ResponseEntity
+                    .badRequest()
+                    .body("admin accounts cannot be created");
+        }
+
         User user = new User(id, realName, password, type);
 
-        if (tokenRequired && !tokenRepository.verifyTokenAdmin(token)) {
-            return ResponseEntity
-                    .status(401)
-                    .body("Token does not exist or token is not admin");
-        }
 
         userRepository.putUser(user);
         logger.info("Added user: {}, type: {}, realName: {}", id, type, realName);
@@ -82,10 +68,9 @@ public class UserController {
     }
 
     @PostMapping("api/doctor")
-    public ResponseEntity<String> addDoctor(@RequestBody String doctorJsonString,
-                                            @RequestParam(required = tokenRequired) String token) {
+    public ResponseEntity<String> addDoctor(@RequestBody String doctorJsonString) {
 
-        logger.info("Add doctor: {}, token: {}", doctorJsonString, token);
+        logger.info("Add doctor: {}", doctorJsonString);
 
         JSONObject jsonObject;
         try {
@@ -105,10 +90,6 @@ public class UserController {
         Double registFee = jsonObject.optDouble("registFee");
 
         Doctor doctor = new Doctor(id, realName, password, type, deptName, registLevel, registFee);
-
-        if (tokenRequired && !tokenRepository.verifyTokenAdmin(token)) {
-            return ResponseEntity.status(401).body("Token does not exist or token is not admin");
-        }
 
         userRepository.putUser(doctor);
         return ResponseEntity

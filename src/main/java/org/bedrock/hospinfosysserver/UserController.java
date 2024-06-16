@@ -12,6 +12,8 @@ import java.util.Collection;
 @RestController
 public class UserController {
 
+    private final boolean tokenRequired = false;
+
     final private UserRepository userRepository;
     final private TokenRepository tokenRepository;
     final private Logger logger = LoggerFactory.getLogger(UserController.class);
@@ -48,7 +50,7 @@ public class UserController {
 
     @PostMapping("api/user")
     public ResponseEntity<String> addUser(@RequestBody final String userJsonString,
-                                          @RequestParam String token) {
+                                          @RequestParam(required = tokenRequired) String token) {
 
         JSONObject jsonObject;
         try {
@@ -66,7 +68,7 @@ public class UserController {
 
         User user = new User(id, realName, password, type);
 
-        if (!tokenRepository.verifyTokenAdmin(token)) {
+        if (tokenRequired && !tokenRepository.verifyTokenAdmin(token)) {
             return ResponseEntity
                     .status(401)
                     .body("Token does not exist or token is not admin");
@@ -81,7 +83,9 @@ public class UserController {
 
     @PostMapping("api/doctor")
     public ResponseEntity<String> addDoctor(@RequestBody String doctorJsonString,
-                                            @RequestParam String token) {
+                                            @RequestParam(required = tokenRequired) String token) {
+
+        logger.info("Add doctor: {}, token: {}", doctorJsonString, token);
 
         JSONObject jsonObject;
         try {
@@ -102,7 +106,7 @@ public class UserController {
 
         Doctor doctor = new Doctor(id, realName, password, type, deptName, registLevel, registFee);
 
-        if (!tokenRepository.verifyTokenAdmin(token)) {
+        if (tokenRequired && !tokenRepository.verifyTokenAdmin(token)) {
             return ResponseEntity.status(401).body("Token does not exist or token is not admin");
         }
 

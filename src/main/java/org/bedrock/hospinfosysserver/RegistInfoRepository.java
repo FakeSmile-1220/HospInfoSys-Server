@@ -17,10 +17,16 @@ public class RegistInfoRepository {
     public RegistInfoRepository() {
         registInfos = new HashMap<>();
 
-        loadRegistInfos();
+        try {
+            loadRegistInfos();
+        } catch (FileNotFoundException e) {
+            logger.info("Unable to find regist infos file, using default regist infos");
+        } catch (Exception e) {
+            logger.error("Unable to load regist infos file, using default regist infos");
+        }
     }
 
-    public RegistInfo getRegistInfo(final int id) {
+    public RegistInfo getRegistInfo(final String id) {
         return registInfos.get(id);
     }
 
@@ -47,9 +53,12 @@ public class RegistInfoRepository {
         }
     }
 
-    public void loadRegistInfos() {
-        try {
+    public void loadRegistInfos() throws IOException, ClassNotFoundException {
             logger.info("Loading regist infos...");
+            File file = new File("registInfo.dat");
+            if (!file.exists()) {
+                throw new FileNotFoundException("registInfo.dat not found");
+            }
             FileInputStream fis = new FileInputStream("registInfo.dat");
             ObjectInputStream ois = new ObjectInputStream(fis);
 
@@ -58,9 +67,5 @@ public class RegistInfoRepository {
             registInfos = (Map<String, RegistInfo>) o;
             ois.close();
             fis.close();
-        } catch (Exception e) {
-            logger.error("Error loading regist infos", e);
-            throw new RuntimeException(e);
-        }
     }
 }

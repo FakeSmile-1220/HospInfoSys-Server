@@ -23,7 +23,7 @@ public class RegistInfoController {
     }
 
     @GetMapping("api/registInfo")
-    public RegistInfo getRegistInfo(@RequestParam Integer id) {
+    public RegistInfo getRegistInfo(@RequestParam String id) {
         logger.info("RegistInfo #{} retrieval request received", id);
         return registInfoRepository.getRegistInfo(id);
     }

@@ -12,12 +12,10 @@ import java.util.Collection;
 @RestController
 public class UserController {
     final private UserRepository userRepository;
-    final private TokenService tokenService;
     final private Logger logger = LoggerFactory.getLogger(UserController.class);
 
-    public UserController(final UserRepository doctorRepository, TokenService tokenService) {
+    public UserController(final UserRepository doctorRepository) {
         this.userRepository = doctorRepository;
-        this.tokenService = tokenService;
     }
 
     @GetMapping("/api/admin/users")

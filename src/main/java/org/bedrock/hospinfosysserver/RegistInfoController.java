@@ -7,10 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @Repository
 public class RegistInfoController {
@@ -22,23 +19,10 @@ public class RegistInfoController {
         this.registInfoRepository = registInfoRepository;
     }
 
-    @GetMapping("api/registInfo")
-    public RegistInfo getRegistInfo(@RequestParam String id) {
-        logger.info("RegistInfo #{} retrieval request received", id);
-        return registInfoRepository.getRegistInfo(id);
-    }
-
-    @PostMapping("api/registInfo")
-    public ResponseEntity<String> putRegistInfo(@RequestBody final String registInfoJsonString) {
-
+    private RegistInfo parseRegistInfo(final String json) throws JSONException {
         JSONObject registInfoJson;
-        try {
-            registInfoJson = new JSONObject(registInfoJsonString);
-        } catch (JSONException e) {
-            return ResponseEntity
-                    .badRequest()
-                    .body("Error parsing registInfo JSON");
-        }
+
+        registInfoJson = new JSONObject(json);
 
         String id = registInfoJson.optString("id");
         String realName = registInfoJson.optString("realName");
@@ -58,12 +42,29 @@ public class RegistInfoController {
         Double drugPrice = registInfoJson.optDouble("drugPrice");
         Integer visitState = registInfoJson.optIntegerObject("visitState");
 
-
-        logger.info("RegistInfo #{} post request received", id);
-
         RegistInfo registInfo = new RegistInfo(id, realName, gender, cardNumber,
                 birthdate, age, homeAddress, deptName, doctorName, registLevel, isBook,
                 registFee, registDate, diagnosis, prescription, drugPrice, visitState);
+
+        return registInfo;
+    }
+
+    @GetMapping("api/registInfo")
+    public RegistInfo getRegistInfo(@RequestParam String id) {
+        logger.info("RegistInfo #{} retrieval request received", id);
+        return registInfoRepository.getRegistInfo(id);
+    }
+
+    @PostMapping("api/registInfo")
+    public ResponseEntity<String> putRegistInfo(@RequestBody final String registInfoJsonString) {
+        RegistInfo registInfo;
+        try {
+            registInfo = parseRegistInfo(registInfoJsonString);
+        } catch (JSONException e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body("Malformed JSON");
+        }
 
         try {
             registInfoRepository.putRegistInfo(registInfo);
@@ -75,6 +76,23 @@ public class RegistInfoController {
 
         return ResponseEntity
                 .ok()
-                .body(id);
+                .body("RegistInfo successfully stored");
+    }
+
+    @PatchMapping("api/registInfo")
+    public ResponseEntity<String> patchRegistInfo(@RequestBody final String registInfoJsonString) {
+        RegistInfo registInfo;
+        try {
+            registInfo = parseRegistInfo(registInfoJsonString);
+        } catch (JSONException e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body("Malformed JSON");
+        }
+
+        registInfoRepository.patchRegistInfo(registInfo);
+        return ResponseEntity
+                .ok()
+                .body("RegistInfo successfully stored");
     }
 }
